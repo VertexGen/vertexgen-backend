@@ -1,0 +1,4 @@
+[submodule "specs"]
+	path = specs
+	url = https://github.com/VertexGen/vertexgen-domain
+	branch = develop
