@@ -8,7 +8,7 @@ from firebase_admin import credentials, initialize_app, storage
 from google.cloud import texttospeech
 from vertexai.language_models import ChatModel
 from google.cloud import aiplatform
-from models.audioModel import AudioRequest, AudioResponse, ErrorResponse
+from models.audioModel import AudioRequest, AudioResponse
 import firebase_admin
 from firebase_admin import storage
 from firebase_admin import credentials
@@ -26,8 +26,6 @@ genai_client = genai.Client(
 )
 # Init FastAPI app and router
 app = FastAPI()
-router = APIRouter()
-app.include_router(router)
 
 # Firebase Initialization
 if not firebase_admin._apps:
@@ -35,12 +33,12 @@ if not firebase_admin._apps:
     initialize_app(cred, {'storageBucket': os.getenv("FIREBASE_BUCKET")})
 
 # Vertex AI Init
-aiplatform.init(project="vertexgen-466509", location="us-central1")
+aiplatform.init(project=os.getenv("PROJECT"), location="us-central1")
 
 # Get AI-generated response from Vertex AI
 def get_ai_response(prompt: str, lang: str) -> str:
     # Ask Gemini 2.0 Flash to respond in the requested language
-    full_prompt = full_prompt = f"Please respond in {lang} without including the language code. Prompt: {prompt}"
+    full_prompt = f"Please translate in {lang} without including the language code. Prompt: {prompt}"
     resp = genai_client.models.generate_content(
         model="gemini-2.0-flash",
         contents=full_prompt
@@ -88,26 +86,20 @@ def generate_audio(text: str, language: str) -> str:
     return url
 
 # API Endpoint
-@router.post(
+@app.post(
     "/audio/generate",
-    response_model=AudioResponse,
-    responses={500: {"model": ErrorResponse}}
+    response_model=AudioResponse
 )
 def text_to_audio(request: AudioRequest):
     try:
-        ai_text = get_ai_response(request.text, request.language)
+        ai_text= get_ai_response(request.text,request.language)
         audio_url = generate_audio(ai_text, request.language)
         return {
-            "response_text": ai_text,
+            "text": ai_text,
             "audio_url": audio_url
         }
     except Exception as e:
         return JSONResponse(
             status_code=500,
-            content=jsonable_encoder(ErrorResponse(detail=str(e)))
+            content=str(e)
         )
-
-app.include_router(router, prefix="", tags=["audio"])
-
-# if __name__ == "__main__":
-#     uvicorn.run("audio:app", host="127.0.0.1", port=8000, reload=True)

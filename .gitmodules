@@ -1,4 +1,4 @@
 [submodule "specs"]
 	path = specs
-	url = https://github.com/your-org/openapi-specs-repo
+	url = https://github.com/VertexGen/vertexgen-domain
 	branch = develop
