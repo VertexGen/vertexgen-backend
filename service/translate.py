@@ -6,10 +6,13 @@ from fastapi import FastAPI, HTTPException, Query
 from vertexai.generative_models import GenerativeModel, Part, GenerationConfig # Import necessary classes
 from google.cloud import aiplatform
 
+from dotenv import load_dotenv
+load_dotenv()
 
-# Set credentials if running locally
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "vertexgen-466509-702ac76e7f0a.json"
-
+gcp_creds = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
+if gcp_creds:
+    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = gcp_creds
+    
 # FastAPI app
 app = FastAPI()
 
