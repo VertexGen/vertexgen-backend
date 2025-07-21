@@ -8,9 +8,14 @@ from typing import Optional
 
 from pydantic import BaseModel
 
+# Request body model
+# class TranslationRequest(BaseModel):
+#     text: str
+#     target_language: str  # e.g., French, Hindi, Spanish
+
 
 class TranslationRequest(BaseModel):
-    phrase: Optional[str] = None
+    text: Optional[str] = None
     target_language: Optional[str] = None
 
 
