@@ -9,7 +9,7 @@ tools = [
 
 inventory_agent = LlmAgent(
     name="InventoryAgent",
-    model="gemini-2.5-flash",
+    model="gemini-1.5-flash",
     description="Agent managing farm inventory and reorder suggestions.",
     tools=tools,
     instruction="""

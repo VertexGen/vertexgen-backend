@@ -1,13 +1,14 @@
-# your_project/api/main.py
-
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from typing import Optional
 import uvicorn
 
+
 from orchestrator import handle_query
 
+
 app = FastAPI(title="Farmer Assistant API")
+
 
 class QueryRequest(BaseModel):
     user_id: str
@@ -15,10 +16,12 @@ class QueryRequest(BaseModel):
     session_id: Optional[str] = None
     image_base64: Optional[str] = None  # Optional image string
 
+
 class QueryResponse(BaseModel):
     reply: str
     session_id: str
-    tool: Optional[dict]
+    tool: list[dict]
+
 
 @app.post("/ask", response_model=QueryResponse)
 async def ask_question(request: QueryRequest):
@@ -32,5 +35,6 @@ async def ask_question(request: QueryRequest):
         return QueryResponse(**result)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
 
 # To run: uvicorn api.main:app --reload

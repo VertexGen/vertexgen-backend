@@ -6,7 +6,7 @@ tools = [FunctionTool(func=crop_diagnosis_tool)]
 
 crop_diagnosis_agent = LlmAgent(
     name="CropDiagnosisAgent",
-    model="gemini-2.5-flash",
+    model="gemini-2.0-flash",
     description="Agent for crop disease diagnosis using images and queries.",
     tools=tools,
     instruction="""
