@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException, UploadFile, File, Form
 from fastapi.responses import JSONResponse
 from typing import Optional
-from ..service.transcribe import transcribe_audio
+from service.transcribe import transcribe_audio
 import base64
 
 
