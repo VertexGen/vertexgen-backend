@@ -1,7 +1,10 @@
-fastapi
-uvicorn
-google-adk
-google-generativeai
-python-dotenv
-pillow
-pydantic
+fastapi==0.116.1
+firebase_admin==7.0.0
+google_cloud_aiplatform==1.104.0
+Pillow==11.3.0
+protobuf==6.31.1
+pydantic==2.11.7
+pydub==0.25.1
+python-dotenv==1.1.1
+SQLAlchemy==2.0.41
+uvicorn==0.35.0
