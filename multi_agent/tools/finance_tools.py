@@ -2,7 +2,6 @@ import os
 import json
 import re
 from datetime import datetime
-
 from dotenv import load_dotenv
 from models.financial_planner import FinancialPlan
 from google.oauth2.service_account import Credentials
