@@ -8,3 +8,6 @@ pydub==0.25.1
 python-dotenv==1.1.1
 SQLAlchemy==2.0.41
 uvicorn==0.35.0
+google-cloud-speech
+python-multipart
+google-adk
