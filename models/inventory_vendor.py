@@ -27,3 +27,11 @@ class ReorderSuggestion(BaseModel):
     vendor_id: Optional[str] = None
     price_per_unit: Optional[float] = None
     audio_url: Optional[str] = None
+
+
+class Order(BaseModel):
+    order_id: str
+    farmer_id: str
+    item_name: str
+    quantity: float
+    timestamp: datetime

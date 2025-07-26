@@ -4,17 +4,18 @@
 
 from __future__ import annotations
 
-from datetime import date
+from datetime import datetime   
 from typing import Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class Scheme(BaseModel):
     scheme_id: Optional[str] = None
-    name: Optional[str] = None
+    scheme_name: Optional[str] = None
     description: Optional[str] = None
-    deadline: Optional[date] = None
+    deadline: Optional[datetime] = None
+    model_config = ConfigDict(from_attributes=True)
 
 
 class ApplicationStatus(BaseModel):

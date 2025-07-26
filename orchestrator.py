@@ -20,9 +20,9 @@ from google.genai import types
 # Import tools
 from multi_agent.tools.crop_tools import crop_diagnosis_tool
 from multi_agent.tools.finance_tools import financial_planner_tool
-from multi_agent.tools.inventory_tools import inventory_status_tool, reorder_suggestions_tool
+from multi_agent.tools.inventory_tools import inventory_status_tool, reorder_suggestions_tool, placeOrder
 from multi_agent.tools.market_tools import market_price_tool
-from multi_agent.tools.scheme_tools import schemes_tool, apply_scheme_tool
+from multi_agent.tools.scheme_tools import get_schemes, apply_scheme_tool
 from multi_agent.tools.weather_tools import weather_advisory_tool
 
 load_dotenv()
@@ -34,9 +34,10 @@ tools = [
     FunctionTool(func=inventory_status_tool),
     FunctionTool(func=reorder_suggestions_tool),
     FunctionTool(func=market_price_tool),
-    FunctionTool(func=schemes_tool),
+    FunctionTool(func=get_schemes),
     FunctionTool(func=apply_scheme_tool),
     FunctionTool(func=weather_advisory_tool),
+    FunctionTool(func=placeOrder)
 ]
 
 # Define agent with improved instructions
@@ -62,12 +63,13 @@ You are the OrchestratorAgent responsible for answering farm-related queries usi
 3️⃣ **Inventory Management**
    - Use `inventory_status_tool` to check farm stock.
    - Use `reorder_suggestions_tool` to suggest what to reorder.
+   - Use `placeOrder` to place orders on the user's behalf if the user agrees to it
 
 4️⃣ **Market Prices**
    - Use `market_price_tool` to fetch mandi crop prices.
 
 5️⃣ **Government Schemes**
-   - Use `schemes_tool` to find schemes.
+   - Use `get_schemes` to find schemes.
    - Use `apply_scheme_tool` to help apply for a scheme.
 
 6️⃣ **Weather Advisory**
