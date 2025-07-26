@@ -9,7 +9,7 @@ from pydantic import BaseModel
 from google.oauth2.service_account import Credentials
 from google import genai
 from google.genai.types import Tool, GenerateContentConfig, GoogleSearch
-
+import re
 
 
 # 🌱 Load environment
@@ -39,47 +39,35 @@ client = genai.Client(
 
 search_tool = Tool(google_search=GoogleSearch())
 
-def weather_advisory_tool(lat: str,long: str) -> dict:
+def weather_advisory_tool(lat: str, long: str, crops: list[str]) -> dict:
     today = datetime.utcnow()
     tomorrow = today + timedelta(days=1)
     tomorrow_str = tomorrow.strftime("%d %B %Y")
 
-    # crop_lines = "\n".join(
-    #     [f"- {crop.capitalize()} (Sowing month: {month})" for crop, month in plant_dict.items()]
-    # )
-
-    plant_instruction = f"""
-        For the specific crop mentioned, carefully analyze tomorrow's weather forecast and provide highly detailed, crop- and stage-specific guidance under "recommendations."
-        Address the following:
-        - Assess whether tomorrow's weather poses any opportunities or risks for all plants at its current growth or harvesting stage, including sensitivity to temperature, rainfall, humidity, wind, or extreme weather.
-        - Explain how the forecasted weather (with seasonal context, given that today's month is the current month) could affect all plants, considering both its typical sowing and primary harvesting periods (for all plant harvesting months.
-        - If the crop is within, near, or outside its usual harvesting period, specify how the weather may impact harvesting operations, grain/nut quality, storage, fieldwork timing, or susceptibility to disease/pests.
-        - Offer concrete, actionable steps or cautions for the grower—such as adjusting irrigation, advancing/delaying harvest, providing cover, modifying fertilizer or pesticide timing, or deploying risk mitigation related to the specific forecast.
-
-        Under "recommendations," provide exactly one concise, plant- and weather-specific action the farmer should take on this day.
-    """
+    crop_list = ", ".join(crops)
 
     prompt = f"""
-    You are an expert agricultural advisor. Your task is to interpret tomorrow's weather forecast ({tomorrow_str}) at the specified geographic location and for the following crop:
+    You are an expert agricultural advisor. Based on tomorrow's weather ({tomorrow_str}) for this location:
 
     Latitude: {lat}
     Longitude: {long}
 
-    Return a JSON in this format:
+    The farmer is growing the following crops: {crop_list}
+
+    For each crop:
+    - Infer its typical sowing month in this region
+    - Estimate its current growth stage
+    - Analyze if the weather conditions for tomorrow are favorable or risky for that stage
+    - Provide a short, clear, actionable weather-sensitive recommendation
+
+    Respond in this JSON format:
     {{
-        "forecast": "<short summary of tomorrow's weather>",
-        "critical_alerts": [list here ONLY if there is a serious weather-related risk for this crop/stage, such as flood, drought, severe storm, hail, heatwave, sudden rain during harvest, etc.],
-        "recommendations": [A single, crop- and weather-specific line of advice considering growth/harvest window and present forecast],
+        "forecast": "<brief weather forecast summary>",
+        "critical_alerts": [list only if weather poses severe risk to crops, such as floods, heatwaves, hail, etc],
+        "recommendations": [one short line per crop with crop-specific crisp weather-sensitive advice],
         "audio_url": "<optional audio explanation or leave null>"
     }}
-
-    Ground your recommendations in both the local forecast and the plant's seasonality—including if the weather enables or threatens key harvest activities, crop quality, or storage. Explicitly connect the weather's effects to the crop's biological and operational needs at this date and location.
-
-    {plant_instruction}
     """
-
-
-
 
     resp = client.models.generate_content(
         model="gemini-2.5-flash",
@@ -90,16 +78,13 @@ def weather_advisory_tool(lat: str,long: str) -> dict:
     parts = resp.candidates[0].content.parts
     full_text = "".join([p.text for p in parts if hasattr(p, "text")])
 
-
-    import re
-
     json_match = re.search(r'\{.*\}', full_text, re.DOTALL)
     if json_match:
         try:
             advisory = json.loads(json_match.group())
             print("✅ Clean JSON parsed:", advisory)
         except json.JSONDecodeError as e:
-            print("❌ Still failed parsing JSON:", e)
+            print("❌ JSON parsing failed:", e)
             advisory = {
                 "forecast": None,
                 "critical_alerts": [],
@@ -114,6 +99,5 @@ def weather_advisory_tool(lat: str,long: str) -> dict:
             "recommendations": ["❗ No JSON found in Gemini response."],
             "audio_url": None
         }
-
 
     return advisory
