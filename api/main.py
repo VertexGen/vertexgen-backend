@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException, UploadFile, File, Form
 from fastapi.responses import JSONResponse
 from typing import Optional
-from ..service.transcribe import transcribe_audio
+from service.transcribe import transcribe_audio
 import base64
 
 
@@ -12,10 +12,11 @@ app = FastAPI(title="Farmer Assistant API")
 @app.post("/ask")
 async def ask_question(
     user_id: str = Form(...),
-    query: Optional[str] = Form(...),
+    query: Optional[str] = Form(None),
     session_id: Optional[str] = Form(None),
     image: Optional[UploadFile] = File(None),
-    audio: Optional[UploadFile] = File(None)
+    audio: Optional[UploadFile] = File(None),
+    audio_lang: Optional[str] = Form(None)
 ):
     try:
         image_base64 = None
@@ -25,7 +26,8 @@ async def ask_question(
 
         audio_text = None
         if audio:
-            audio_text = transcribe_audio(audio, 'hi-IN')
+            audio_text = await transcribe_audio(audio, audio_lang)
+            print(audio_text.transcript)
 
         result = await handle_query(
             user_id=user_id,
