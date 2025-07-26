@@ -1,11 +1,11 @@
-from sqlalchemy import Column, String, DateTime, func
+from sqlalchemy import Column, String, DateTime, func,ForeignKey
 from db.database import Base
 from sqlalchemy.orm import relationship
 
 class AppliedScheme(Base):
     __tablename__ = "applied_schemes"
     reference_id = Column(String, primary_key=True)
-    scheme_id = Column(String, index=True)
+    scheme_id = Column(String,ForeignKey("scheme_master.scheme_id"),index=True,)
     farmer_id = Column(String, index=True)
     applied_at = Column(DateTime(timezone=True), server_default=func.now())
     scheme = relationship("SchemeMaster", backref="applications")

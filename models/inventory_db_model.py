@@ -15,3 +15,11 @@ class StockLogDB(Base):
     item_name = Column(String)
     used = Column(Float)
     timestamp = Column(DateTime(timezone=True), server_default=func.now())
+
+class OrderDB(Base):
+    __tablename__ = "orders"
+    order_id = Column(String, primary_key=True)
+    farmer_id = Column(String, index=True)
+    item_name = Column(String)
+    quantity = Column(Float)
+    timestamp = Column(DateTime(timezone=True), server_default=func.now())

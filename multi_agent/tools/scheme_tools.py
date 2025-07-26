@@ -11,12 +11,12 @@ import os
 from sqlalchemy import exc
 from models.scheme_navigator import Scheme, ApplicationStatus
 from models.scheme_db import SchemeMaster,AppliedScheme
-from db.database import SessionLocal
+from db.database import SessionLocal,init_db
 from models.scheme_db import AppliedScheme
 import uuid
 from sqlalchemy import func
 
-
+init_db()
 app=FastAPI()
 
 tool_log = []
@@ -25,8 +25,7 @@ grounding_tool = types.Tool(
     google_search=types.GoogleSearch()
 )
 
-@app.post('/getSchemes',response_model=List[Scheme])
-async def get_schemes(region: Optional[str] = None, crop: Optional[str] = None):
+async def get_schemes(region: Optional[str] = None, crop: Optional[str] = None,tool_context: ToolContext = None):
     tool_log.append(("schemes_tool", datetime.utcnow().isoformat()))
     db = SessionLocal()
     query = db.query(SchemeMaster)
@@ -60,38 +59,39 @@ async def get_schemes(region: Optional[str] = None, crop: Optional[str] = None):
 #     )
 #     return response.text
 
-# @app.post('/apply_scheme')
-# async def apply_scheme_tool(scheme_id: str, farmer_id: str) -> dict:
-#     tool_log.append(("apply_scheme_tool", datetime.utcnow().isoformat()))
-#     session = SessionLocal()
-#     try:
-#         # Get scheme_name from SchemeMaster
-#         master = session.query(SchemeMaster).filter_by(scheme_id=scheme_id).first()
-#         if not master:
-#             raise HTTPException(status_code=404, detail="Invalid scheme_id")
+async def apply_scheme_tool(scheme_id: str, farmer_id: str,tool_context: ToolContext = None) -> dict:
+    tool_log.append(("apply_scheme_tool", datetime.utcnow().isoformat()))
+    session = SessionLocal()
+    try:
+        # Get scheme_name from SchemeMaster
+        master = session.query(SchemeMaster).filter_by(scheme_id=scheme_id).first()
+        if not master:
+            raise HTTPException(status_code=404, detail="Invalid scheme_id")
 
-#         # Generate a unique reference ID
-#         ref_id = f"{scheme_id}-{farmer_id}-{uuid.uuid4().hex[:6]}"
+        # Generate a unique reference ID
+        ref_id = f"{scheme_id}-{farmer_id}-{uuid.uuid4().hex[:6]}"
 
-#         # Insert into AppliedScheme with scheme_name
-#         entry = AppliedScheme(
-#             reference_id=ref_id,
-#             scheme_id=scheme_id,
-#             farmer_id=farmer_id
-#         )
-#         session.add(entry)
-#         session.commit()
+        # Insert into AppliedScheme with scheme_name
+        entry = AppliedScheme(
+            reference_id=ref_id,
+            scheme_id=scheme_id,
+            farmer_id=farmer_id
+        )
+        session.add(entry)
+        session.commit()
 
-#     except HTTPException:
-#         session.rollback()
-#         raise
-#     except exc.SQLAlchemyError as e:
-#         session.rollback()
-#         raise HTTPException(status_code=500, detail="Database error")
-#     else:
-#         return {
-#             "status": "applied",
-#             "reference_id": ref_id
-#         }
-#     finally:
-#         session.close()
+    except HTTPException:
+        session.rollback()
+        raise
+    except exc.SQLAlchemyError as e:
+        session.rollback()
+        raise HTTPException(status_code=500, detail=str(e))
+    else:
+        return {
+            "status": "applied",
+            "reference_id": ref_id,
+            "scheme_id":scheme_id,
+            "scheme_name":master.scheme_name
+        }
+    finally:
+        session.close()

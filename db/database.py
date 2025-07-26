@@ -12,5 +12,6 @@ Base = declarative_base()
 
 def init_db():
     # Import your models inside this function so they register with Base
-    import models  # noqa: F401
+    print("Ok")
+    import models # noqa: F401
     Base.metadata.create_all(bind=engine)
