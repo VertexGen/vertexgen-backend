@@ -38,3 +38,7 @@ async def ask_question(
         return JSONResponse(content=result)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/")
+async def root():
+    return {"message": "Farmer Assistant API is running!"}
