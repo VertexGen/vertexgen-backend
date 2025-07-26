@@ -14,4 +14,4 @@ COPY . .
 ENV PYTHONPATH=/app
 
 # Run the FastAPI app
-CMD ["uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "8080"]
+CMD ["uvicorn", "app.api.main:app", "--host", "0.0.0.0", "--port", "8080"]
