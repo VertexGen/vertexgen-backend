@@ -12,7 +12,7 @@ from pydantic import BaseModel
 class MarketPrice(BaseModel):
     crop: Optional[str] = None
     mandi: Optional[str] = None
-    price: Optional[float] = None
+    price: Optional[str] = None
     trend: Optional[str] = None
     advice: Optional[str] = None
     audio_url: Optional[str] = None
