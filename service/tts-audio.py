@@ -20,7 +20,7 @@ from fastapi.encoders import jsonable_encoder
 # load_dotenv()
 genai_client = genai.Client(
     vertexai=True,
-    project=os.getenv("VERTEX_PROJECT_ID"),
+    project="vertexgen-466509",
     location="us-central1"
 )
 # Init FastAPI app and router
@@ -28,7 +28,7 @@ app = FastAPI()
 
 def initialize_firebase():
     if not firebase_admin._apps:
-        firebase_bucket = os.getenv("FIREBASE_BUCKET")
+        firebase_bucket = "vertexgen-466509.firebasestorage.app"
 
         cred = credentials.ApplicationDefault()
 
