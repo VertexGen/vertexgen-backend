@@ -1,6 +1,6 @@
 fastapi==0.116.1
-firebase_admin==7.0.0
-google_cloud_aiplatform==1.104.0
+firebase-admin==6.3.0
+google-cloud-aiplatform==1.104.0
 Pillow==11.3.0
 protobuf==6.31.1
 pydantic==2.11.7

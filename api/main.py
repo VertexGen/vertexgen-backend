@@ -12,7 +12,7 @@ app = FastAPI(title="Farmer Assistant API")
 @app.post("/ask")
 async def ask_question(
     user_id: str = Form(...),
-    query: str = Form(...),
+    query: Optional[str] = Form(...),
     session_id: Optional[str] = Form(None),
     image: Optional[UploadFile] = File(None),
     audio: Optional[UploadFile] = File(None)
