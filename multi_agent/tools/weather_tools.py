@@ -17,17 +17,8 @@ from google.oauth2 import service_account
 SCOPES = ["https://www.googleapis.com/auth/cloud-platform"]
 
 def get_credentials():
-    gcp_creds = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
-    
-    if gcp_creds:
-        # Local development using service account key file
-        return service_account.Credentials.from_service_account_file(
-            gcp_creds, scopes=SCOPES
-        )
-    else:
-        # Deployed environment (GCP provides default credentials)
-        creds, _ = default(scopes=SCOPES)
-        return creds
+    creds, _ = default(scopes=SCOPES)
+    return creds
     
 creds = get_credentials()
     

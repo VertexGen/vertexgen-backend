@@ -30,13 +30,7 @@ def initialize_firebase():
     if not firebase_admin._apps:
         firebase_bucket = os.getenv("FIREBASE_BUCKET")
 
-        gcp_creds_path = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
-        if gcp_creds_path:
-            # Local: initialize using service account JSON file
-            cred = credentials.Certificate(gcp_creds_path)
-        else:
-            # Deployment: use Application Default Credentials (ADC)
-            cred = credentials.ApplicationDefault()
+        cred = credentials.ApplicationDefault()
 
         initialize_app(cred, {'storageBucket': firebase_bucket})
 

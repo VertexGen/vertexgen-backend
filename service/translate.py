@@ -14,18 +14,8 @@ from dotenv import load_dotenv
 SCOPES = ["https://www.googleapis.com/auth/cloud-platform"]
 
 def get_gcp_credentials():
-    gcp_creds_path = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
-
-    if gcp_creds_path:
-        # Use the local credentials file
-        return service_account.Credentials.from_service_account_file(
-            gcp_creds_path,
-            scopes=SCOPES
-        )
-    else:
-        # Use the default credentials provided by the environment (Cloud Run, App Engine, etc.)
-        creds, _ = default(scopes=SCOPES)
-        return creds
+    creds, _ = default(scopes=SCOPES)
+    return creds
     
 # FastAPI app
 app = FastAPI()
