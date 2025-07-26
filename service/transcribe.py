@@ -5,13 +5,27 @@ from pydub import AudioSegment
 from typing import Optional
 import io
 import os
+from google.auth import default
+from google.oauth2 import service_account
 
 from dotenv import load_dotenv
-load_dotenv()
 
-gcp_creds = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
-if gcp_creds:
-    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = gcp_creds
+SCOPES = ["https://www.googleapis.com/auth/cloud-platform"]
+
+def get_credentials():
+    gcp_creds = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
+    
+    if gcp_creds:
+        # Local development using service account key file
+        return service_account.Credentials.from_service_account_file(
+            gcp_creds, scopes=SCOPES
+        )
+    else:
+        # Deployed environment (GCP provides default credentials)
+        creds, _ = default(scopes=SCOPES)
+        return creds
+    
+creds = get_credentials()
 
 from models.transcribeModel import TranscribeRequest, TranscribeResponse, ErrorResponse
 

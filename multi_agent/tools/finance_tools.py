@@ -8,19 +8,29 @@ from google.oauth2.service_account import Credentials
 from google import genai
 from google.genai.types import Tool, GenerateContentConfig, GoogleSearch
 from fastapi import FastAPI, HTTPException
+from google.auth import default
+from google.oauth2 import service_account
 
 app=FastAPI(title="Financial Planner API", version="1.0")
-load_dotenv()
-gcp_creds = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
-if gcp_creds:
-    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = gcp_creds
 
-creds = Credentials.from_service_account_file(
-    gcp_creds,
-    scopes=["https://www.googleapis.com/auth/cloud-platform"]
-)
+SCOPES = ["https://www.googleapis.com/auth/cloud-platform"]
 
-PROJECT_ID = json.load(open(gcp_creds))["project_id"]
+def get_credentials():
+    gcp_creds = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
+    
+    if gcp_creds:
+        # Local development using service account key file
+        return service_account.Credentials.from_service_account_file(
+            gcp_creds, scopes=SCOPES
+        )
+    else:
+        # Deployed environment (GCP provides default credentials)
+        creds, _ = default(scopes=SCOPES)
+        return creds
+
+creds = get_credentials()
+
+PROJECT_ID = "vertexgen-466509"
 LOCATION = "us-central1"
 
 client = genai.Client(

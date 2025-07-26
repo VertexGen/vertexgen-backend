@@ -10,14 +10,14 @@ from google.cloud import aiplatform
 from models.audioModel import AudioRequest, AudioResponse
 import firebase_admin
 from firebase_admin import storage
-from firebase_admin import credentials
+from firebase_admin import credentials, initialize_app
 import google.genai as genai
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
 
 
 # Load environment variables
-load_dotenv()
+# load_dotenv()
 genai_client = genai.Client(
     vertexai=True,
     project=os.getenv("VERTEX_PROJECT_ID"),
@@ -26,13 +26,22 @@ genai_client = genai.Client(
 # Init FastAPI app and router
 app = FastAPI()
 
-# Firebase Initialization
-if not firebase_admin._apps:
-    cred = credentials.Certificate(os.getenv("GOOGLE_APPLICATION_CREDENTIALS"))
-    initialize_app(cred, {'storageBucket': os.getenv("FIREBASE_BUCKET")})
+def initialize_firebase():
+    if not firebase_admin._apps:
+        firebase_bucket = os.getenv("FIREBASE_BUCKET")
+
+        gcp_creds_path = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
+        if gcp_creds_path:
+            # Local: initialize using service account JSON file
+            cred = credentials.Certificate(gcp_creds_path)
+        else:
+            # Deployment: use Application Default Credentials (ADC)
+            cred = credentials.ApplicationDefault()
+
+        initialize_app(cred, {'storageBucket': firebase_bucket})
 
 # Vertex AI Init
-aiplatform.init(project=os.getenv("PROJECT"), location="us-central1")
+aiplatform.init(project="vertexgen-466509", location="us-central1")
 
 # Get AI-generated response from Vertex AI
 def get_ai_response(prompt: str, lang: str) -> str:

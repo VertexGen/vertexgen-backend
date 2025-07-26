@@ -5,13 +5,27 @@ from fastapi import FastAPI, HTTPException, Query
 # Import GenerativeModel instead of ChatModel from preview
 from vertexai.generative_models import GenerativeModel, Part, GenerationConfig # Import necessary classes
 from google.cloud import aiplatform
+from google.oauth2 import service_account
+from google.auth import default
+
 
 from dotenv import load_dotenv
-load_dotenv()
 
-gcp_creds = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
-if gcp_creds:
-    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = gcp_creds
+SCOPES = ["https://www.googleapis.com/auth/cloud-platform"]
+
+def get_gcp_credentials():
+    gcp_creds_path = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
+
+    if gcp_creds_path:
+        # Use the local credentials file
+        return service_account.Credentials.from_service_account_file(
+            gcp_creds_path,
+            scopes=SCOPES
+        )
+    else:
+        # Use the default credentials provided by the environment (Cloud Run, App Engine, etc.)
+        creds, _ = default(scopes=SCOPES)
+        return creds
     
 # FastAPI app
 app = FastAPI()

@@ -10,24 +10,28 @@ from google.oauth2.service_account import Credentials
 from google import genai
 from google.genai.types import Tool, GenerateContentConfig, GoogleSearch
 import re
+from google.auth import default
+from google.oauth2 import service_account
 
 
-# 🌱 Load environment
-load_dotenv()
-gcp_creds = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
-if gcp_creds:
-    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = gcp_creds
+SCOPES = ["https://www.googleapis.com/auth/cloud-platform"]
 
-# 🔐 Set up GCP credentials
-creds = Credentials.from_service_account_file(
-    gcp_creds,
-    scopes=["https://www.googleapis.com/auth/cloud-platform"],
-)
-
-# 🌍 Extract project details
-with open(gcp_creds) as f:
-    info = json.load(f)
-PROJECT_ID = info["project_id"]
+def get_credentials():
+    gcp_creds = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
+    
+    if gcp_creds:
+        # Local development using service account key file
+        return service_account.Credentials.from_service_account_file(
+            gcp_creds, scopes=SCOPES
+        )
+    else:
+        # Deployed environment (GCP provides default credentials)
+        creds, _ = default(scopes=SCOPES)
+        return creds
+    
+creds = get_credentials()
+    
+PROJECT_ID = "vertexgen-466509"
 LOCATION = "us-central1"
 
 client = genai.Client(
