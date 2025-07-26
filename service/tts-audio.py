@@ -1,7 +1,6 @@
 import datetime
 import uuid
 import os
-import uvicorn
 from fastapi import FastAPI, APIRouter
 from dotenv import load_dotenv
 from firebase_admin import credentials, initialize_app, storage
