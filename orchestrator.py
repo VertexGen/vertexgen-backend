@@ -109,8 +109,6 @@ async def handle_query(
 ) -> dict:
     session = await get_or_create_session(user_id=user_id, session_id=session_id)
 
-    print(image_base64)
-
     parts = []
     text = f"My farmer ID is {user_id}.\n{user_input}"
 
@@ -142,6 +140,15 @@ async def handle_query(
             for part in event.content.parts:
                 if hasattr(part, "function_call") and part.function_call:
                     fc = part.function_call
+
+                    if (
+                        fc.name == "crop_diagnosis_tool"
+                        and "image_base64" in fc.args
+                        and fc.args["image_base64"] != image_base64
+                    ):
+                        fc.args["image_base64"] = image_base64
+                        fc.args["query_input"] = user_input
+                        
                     print(f"🔧 Tool call detected: {fc.name} with args: {fc.args}")
                     tool_calls.append({
                         "name": fc.name,

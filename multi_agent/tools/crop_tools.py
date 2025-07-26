@@ -12,7 +12,6 @@ load_dotenv()
 
 def crop_diagnosis_tool(farmer_id: str, query_input: str, image_base64: str) -> str:
     print("INSIDE crop_diagnosis_tool")
-    print(image_base64)
 
     # with open("output.jpg", "wb") as f:
     #     f.write(base64.b64decode(image_base64))
@@ -26,7 +25,7 @@ def crop_diagnosis_tool(farmer_id: str, query_input: str, image_base64: str) -> 
         print("Base64 decode error:", e)
         return "Invalid image input"
 
-    client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
+    client = genai.Client()
     request = [
         types.Part.from_text(text=query_input),
         types.Part.from_bytes(data=image_bytes, mime_type='image/jpeg')
@@ -48,5 +47,5 @@ def crop_diagnosis_tool(farmer_id: str, query_input: str, image_base64: str) -> 
         return response.text if hasattr(response, "text") else str(response)
     except Exception as e:
         print("Error during generate_content:", e)
-        return "Failed to generate diagnosis. Please try again later."
+        return "Failed to generate diagnosis. Please try again later." + e
 

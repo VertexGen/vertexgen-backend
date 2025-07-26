@@ -1,40 +1,38 @@
-from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
+from fastapi import FastAPI, HTTPException, UploadFile, File, Form
+from fastapi.responses import JSONResponse
 from typing import Optional
+from service.transcribe import transcribe_audio
+import base64
 import uvicorn
-
 
 from orchestrator import handle_query
 
-
 app = FastAPI(title="Farmer Assistant API")
 
-
-class QueryRequest(BaseModel):
-    user_id: str
-    query: str
-    session_id: Optional[str] = None
-    image_base64: Optional[str] = None  # Optional image string
-
-
-class QueryResponse(BaseModel):
-    reply: str
-    session_id: str
-    tool: list[dict]
-
-
-@app.post("/ask", response_model=QueryResponse)
-async def ask_question(request: QueryRequest):
+@app.post("/ask")
+async def ask_question(
+    user_id: str = Form(...),
+    query: str = Form(...),
+    session_id: Optional[str] = Form(None),
+    image: Optional[UploadFile] = File(None),
+    audio: Optional[UploadFile] = File(None)
+):
     try:
+        image_base64 = None
+        if image:
+            image_bytes = await image.read()
+            image_base64 = base64.b64encode(image_bytes).decode('utf-8')
+
+        audio_text = None
+        if audio:
+            audio_text = transcribe_audio(audio, 'hi-IN')
+
         result = await handle_query(
-            user_id=request.user_id,
-            user_input=request.query,
-            session_id=request.session_id,
-            image_base64=request.image_base64
+            user_id=user_id,
+            user_input=audio_text if audio_text else query,
+            session_id=session_id,
+            image_base64=image_base64
         )
-        return QueryResponse(**result)
+        return JSONResponse(content=result)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
-
-# To run: uvicorn api.main:app --reload
