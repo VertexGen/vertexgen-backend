@@ -11,3 +11,4 @@ uvicorn==0.35.0
 google-cloud-speech
 python-multipart
 google-adk
+psycopg2
