@@ -9,8 +9,20 @@ from typing import Optional
 from pydantic import BaseModel
 
 
+from typing import Optional, Dict
+from pydantic import BaseModel
+
 class FinancialPlan(BaseModel):
-    total_cost: Optional[float] = None
+    crop: Optional[str] = None
+    total_cost : Optional[float] = None  # total cost of all inputs
+    total_cost_division: Optional[Dict[str, float]]  # <-- Changed from str to Dict
     expected_income: Optional[float] = None
     net_profit: Optional[float] = None
     break_even_price: Optional[float] = None
+    expected_yield_kg: Optional[float] = None
+    expected_price_per_kg: Optional[float] = None
+    harvest_month: Optional[str] = None
+    advice: Optional[str] = None
+    audio_url: Optional[str] = None
+
+   
