@@ -97,7 +97,7 @@ vertexgen-backend/
 
 ## 👥 Team
 
-- Umesh & Team (Add your team members here!)
+- Timsal, Vridhi, Sparsh & Umesh
 
 ---
 
