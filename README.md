@@ -27,9 +27,6 @@
 
 ---
 
-## Architecture Diagram
-![Architecture Diagram](https://drive.google.com/drive/u/0/home)
-
 ## ⚡ Quick Start
 
 ### 1. Clone the Repository
