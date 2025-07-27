@@ -28,7 +28,7 @@
 ---
 
 ## Architecture Diagram
-![Architecture Diagram](file:///Users/timsal/Desktop/Screenshot%202025-07-27%20at%2012.25.01%E2%80%AFPM.png)
+![Architecture Diagram](https://drive.google.com/drive/u/0/home)
 
 ## ⚡ Quick Start
 
