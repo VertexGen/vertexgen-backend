@@ -27,6 +27,9 @@
 
 ---
 
+## Architecture Diagram
+![Architecture Diagram]()
+
 ## ⚡ Quick Start
 
 ### 1. Clone the Repository
