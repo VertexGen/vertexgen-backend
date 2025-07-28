@@ -99,12 +99,5 @@ vertexgen-backend/
 
 - Timsal, Vridhi, Sparsh & Umesh
 
----
-
-## 📝 License
-
-MIT License
-
----
 
 **Built for Hackathons. Empowering Farmers with AI.**
